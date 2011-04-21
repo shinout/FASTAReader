@@ -37,7 +37,15 @@ test('equal', FASTAReader.fetch(fpath, result.sample1, 49, 6), 'taacta', 'invali
 test('equal', FASTAReader.fetch(fpath, result.sample1, 1, 600).length, 400, 'invalid fetch result');
 test('equal', FASTAReader.fetch(fpath, result.sample4, 1, 8), 'aaaaaaaa', 'invalid fetch result');
 test('equal', FASTAReader.fetch(fpath, result.sample4, 1, 333), 'aaaaaaaa', 'invalid fetch result');
+test('equal', FASTAReader.fetch(fpath, result.sample4, 8, 1), 'a', 'invalid fetch result');
+test('equal', FASTAReader.fetch(fpath, result.sample4, 9, 1), '', 'invalid fetch result');
 test('result', 'line length test');
-
-
 fs.closeSync(fd);
+
+/* object test */
+
+var fastas = new FASTAReader(fpath);
+test('equal', fastas.fetch('sample1', 49, 6), 'taacta', 'invalid fetch result');
+test('equal', fastas.fetch('sample4', 8, 1), 'a', 'invalid fetch result');
+test('result', 'object test');
+

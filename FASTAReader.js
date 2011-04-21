@@ -28,7 +28,15 @@ function ffetch(fpath, unit, start, length) {
   var fd        = fs.openSync(fpath, 'r');
   var startIdx  = pos2index(start, unit.id.length + 2, unit.linelen);
   var endIdx    = Math.min(unit.length, pos2index(length + start, unit.id.length + 2, unit.linelen));
-  var read      = fs.readSync(fd, endIdx - startIdx, startIdx + unit.start);
+  if (endIdx - startIdx <= 0) {
+    return '';
+  }
+  try {
+    var read      = fs.readSync(fd, endIdx - startIdx, startIdx + unit.start);
+  }
+  catch(e) {
+    return '';
+  }
   fs.closeSync(fd);
   return read[0].split('\n').join('');
 }
