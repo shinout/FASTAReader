@@ -43,9 +43,31 @@ function ffetch(fpath, unit, start, length) {
 
 
 
-
+/**
+ * FASTAReader.pos2index
+ * convert DNA base position to character index
+ * @param number  pos     : DNA base position
+ * @param number  prelen  : header data length
+ * @param number  linelen : one line length
+ * @return number : character index
+ */
 function pos2index(pos, prelen, linelen) {
   return prelen + pos -1 + Math.floor( (pos -1)/linelen );
+}
+
+
+/**
+ * FASTAReader.idx2pos
+ * convert charcter index to DNA base position
+ * @param number  idx     : character index
+ * @param number  prelen  : header data length
+ * @param number  linelen : one line length
+ * @return number : DNA base position
+ */
+function idx2pos(idx, prelen, linelen) {
+  prelen = prelen || 0;
+  linelen = linelen || 50;
+  return Math.max(0, idx +1 - prelen - Math.floor((idx +1 - prelen)/(linelen + 1)));
 }
 
 
@@ -117,5 +139,6 @@ function fparse(fpath) {
 FASTAReader.parse = fparse;
 FASTAReader.fetch = ffetch;
 FASTAReader.pos2index = pos2index;
+FASTAReader.idx2pos= idx2pos;
 
 module.exports = FASTAReader;
