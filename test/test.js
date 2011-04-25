@@ -42,6 +42,12 @@ test('equal', FASTAReader.fetch(fpath, result.sample4, 9, 1), '', 'invalid fetch
 test('result', 'line length test');
 fs.closeSync(fd);
 
+/* get start pos, end pos */
+var st = FASTAReader.fstartIndex(result.sample1);
+var en = FASTAReader.fendIndex(result.sample1); 
+test('equal', st, 12, 'invalid start index');
+test('equal', en, 12 + 51*8, 'invalid end index');
+test('equal', FASTAReader.fgetIndex(result.sample1, 1), st , 'invalid start pos');
 /* object test */
 
 var fastas = new FASTAReader(fpath);

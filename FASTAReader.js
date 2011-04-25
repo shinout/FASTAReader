@@ -20,19 +20,45 @@ FASTAReader.prototype.fetch = function(id, start, length) {
   return ffetch(this.fpath, unit, start, length);
 }
 
+FASTAReader.prototype.getStartIndex = function(id) {
+  return fstartIndex(this.result[id]);
+}
 
+FASTAReader.prototype.getEndIndex = function(id) {
+  return fendIndex(this.result[id]);
+}
 
+FASTAReader.prototype.getIndex = function(id, pos) {
+  var unit = this.result[id];
+  return fgetIndex(unit, pos);
+}
+
+function fgetIndex(unit, pos) {
+  return pos2index(pos, idlen(unit), unit.linelen) + unit.start;
+}
+
+function idlen(unit) {
+  return unit.id.length + 2;
+}
+
+function fstartIndex(unit) {
+  return idlen(unit) + unit.start;
+}
+
+function fendIndex(unit) {
+  return unit.length + unit.start;
+}
 
 
 function ffetch(fpath, unit, start, length) {
   var fd        = fs.openSync(fpath, 'r');
-  var startIdx  = pos2index(start, unit.id.length + 2, unit.linelen);
-  var endIdx    = Math.min(unit.length, pos2index(length + start, unit.id.length + 2, unit.linelen));
+  var startIdx  = fgetIndex(unit, start);
+  var endIdx    = Math.min(fgetIndex(unit, start + length), fendIndex(unit));
   if (endIdx - startIdx <= 0) {
     return '';
   }
   try {
-    var read      = fs.readSync(fd, endIdx - startIdx, startIdx + unit.start);
+    var read      = fs.readSync(fd, endIdx - startIdx, startIdx);
   }
   catch(e) {
     return '';
@@ -72,9 +98,14 @@ function idx2pos(idx, prelen, linelen) {
 
 
 
-
-
-
+/**
+ * result format
+ * id      : sequence id
+ * start   : start index
+ * linelen : length of one line
+ * length  : total index length (including id length)
+ *
+ */
 
 function fparse(fpath) {
   if (pth.existsSync(!fpath)) {
@@ -140,5 +171,8 @@ FASTAReader.parse = fparse;
 FASTAReader.fetch = ffetch;
 FASTAReader.pos2index = pos2index;
 FASTAReader.idx2pos= idx2pos;
+FASTAReader.fstartIndex= fstartIndex;
+FASTAReader.fendIndex= fendIndex;
+FASTAReader.fgetIndex= fgetIndex;
 
 module.exports = FASTAReader;
