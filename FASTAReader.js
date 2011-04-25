@@ -26,14 +26,14 @@ FASTAReader.prototype.getEndIndex = function(id) {
   return unit.getEndIndex();
 }
 
-FASTAReader.prototype.getLength = function(id) {
+FASTAReader.prototype.getEndPos = function(id) {
   var unit = this.result[id];
-  return unit.getEndIndex();
+  return unit.getEndPos();
 }
 
 FASTAReader.prototype.getIndex = function(id, pos) {
   var unit = this.result[id];
-  return unit.getEndIndex(pos);
+  return unit.getIndex(pos);
 }
 
 

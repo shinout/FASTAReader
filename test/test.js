@@ -53,10 +53,15 @@ test('equal', FASTAReader.fendPos(result.sample1), 400 , 'invalid end pos');
 test('equal', FASTAReader.fendPos(result.sample2), 250 , 'invalid end pos');
 test('equal', FASTAReader.fendPos(result.sample3), 19, 'invalid end pos');
 test('equal', FASTAReader.fendPos(result.sample4), 8 , 'invalid end pos');
+
 /* object test */
 
 var fastas = new FASTAReader(fpath);
 test('equal', fastas.fetch('sample1', 49, 6), 'taacta', 'invalid fetch result');
 test('equal', fastas.fetch('sample4', 8, 1), 'a', 'invalid fetch result');
+test('equal', fastas.getStartIndex('sample1'), 12, 'invalid getStartIndex result');
+test('equal', fastas.getEndIndex('sample1'), 12 + 51*8, 'invalid getEndIndex result');
+test('equal', fastas.getEndPos('sample1'), 400, 'invalid getEndPos result');
+test('equal', fastas.getIndex('sample1', 53), 12 + 53 + 1 -1, 'invalid getIndex result');
 test('result', 'object test');
 
