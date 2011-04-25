@@ -13,25 +13,56 @@ function FASTAReader(fpath) {
 
 
 FASTAReader.prototype.fetch = function(id, start, length) {
-  if (!this.result[id]) {
-    return false;
-  }
   var unit = this.result[id];
-  return ffetch(this.fpath, unit, start, length);
+  return unit.fetch(start, length);
 }
 
 FASTAReader.prototype.getStartIndex = function(id) {
-  return fstartIndex(this.result[id]);
+  var unit = this.result[id];
+  return unit.getStartIndex();
 }
 
 FASTAReader.prototype.getEndIndex = function(id) {
-  return fendIndex(this.result[id]);
+  var unit = this.result[id];
+  return unit.getEndIndex();
 }
 
 FASTAReader.prototype.getIndex = function(id, pos) {
   var unit = this.result[id];
-  return fgetIndex(unit, pos);
+  return unit.getEndIndex(pos);
 }
+
+function FASTA(unit, fpath) {
+  this.id      = unit.id;
+  this.start   = unit.start;
+  this.length  = unit.length;
+  this.linelen = unit.linelen;
+  this.fpath   = fpath;
+}
+
+FASTA.prototype.getIndex = function(pos) {
+  return fgetIndex(this, pos);
+}
+
+FASTA.prototype.getStartIndex = function() {
+  return fstartIndex(this);
+}
+
+FASTA.prototype.idlen = function() {
+  return idlen(this);
+}
+
+FASTA.prototype.getEndIndex = function() {
+  return fendIndex(this);
+}
+
+FASTA.prototype.fetch = function(start, length) {
+  return ffetch(this.fpath, this, start, length);
+}
+
+
+
+/* FASTA function implementation (be static) */
 
 function fgetIndex(unit, pos) {
   return pos2index(pos, idlen(unit), unit.linelen) + unit.start;
@@ -68,6 +99,8 @@ function ffetch(fpath, unit, start, length) {
 }
 
 
+
+/* static functions */
 
 /**
  * FASTAReader.pos2index
@@ -137,7 +170,7 @@ function fparse(fpath) {
         // register a previous summary
         if (summary) {
           summary.length = length - emptyline;
-          result[summary.id] = summary;
+          result[summary.id] = new FASTA(summary, fpath);
         }
         start += length;
         emptyline = 0;
@@ -163,7 +196,6 @@ function fparse(fpath) {
   fs.closeSync(fd);
   return result;
 }
-
 
 
 
