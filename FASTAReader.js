@@ -3,7 +3,6 @@ var pth = require('path');
 
 
 
-
 function FASTAReader(fpath) {
   this.fpath = fpath;
   this.result = fparse(fpath);
@@ -27,10 +26,16 @@ FASTAReader.prototype.getEndIndex = function(id) {
   return unit.getEndIndex();
 }
 
+FASTAReader.prototype.getLength = function(id) {
+  var unit = this.result[id];
+  return unit.getEndIndex();
+}
+
 FASTAReader.prototype.getIndex = function(id, pos) {
   var unit = this.result[id];
   return unit.getEndIndex(pos);
 }
+
 
 function FASTA(unit, fpath) {
   this.id      = unit.id;
@@ -60,6 +65,10 @@ FASTA.prototype.fetch = function(start, length) {
   return ffetch(this.fpath, this, start, length);
 }
 
+FASTA.prototype.getEndPos = function(){
+  return fendPos(this);
+}
+
 
 
 /* FASTA function implementation (be static) */
@@ -79,6 +88,11 @@ function fstartIndex(unit) {
 function fendIndex(unit) {
   return unit.length + unit.start;
 }
+
+function fendPos(unit) {
+  return idx2pos(unit.length-1, idlen(unit), unit.linelen);
+}
+
 
 
 function ffetch(fpath, unit, start, length) {
@@ -206,5 +220,6 @@ FASTAReader.idx2pos= idx2pos;
 FASTAReader.fstartIndex= fstartIndex;
 FASTAReader.fendIndex= fendIndex;
 FASTAReader.fgetIndex= fgetIndex;
+FASTAReader.fendPos = fendPos;
 
 module.exports = FASTAReader;
