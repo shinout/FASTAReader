@@ -240,7 +240,7 @@ FASTAReader.fendPos = fendPos;
 
 module.exports = FASTAReader;
 
-if (__filename == process.argv[0]) {
+if (__filename == process.argv[1]) {
   main();
 }
 
