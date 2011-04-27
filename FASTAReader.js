@@ -209,6 +209,10 @@ function fparse(fpath) {
         summary = {id: line.slice(1), start: start, linelen: 0};
       }
       else {
+        if (!summary) {
+          process.stderr.write(fpath +' does not seem to be FASTA format.\n');
+          process.exit();
+        }
         if (!summary.linelen) {
           summary.linelen = line.length;
         }
