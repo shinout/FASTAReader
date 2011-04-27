@@ -2,6 +2,16 @@ var fs  = require('fs');
 var pth = require('path');
 
 
+function main() {
+  var fpath = process.argv[2];
+  if (! pth.existsSync(fpath)) {
+    process.stderr.write(fpath +': No such file.\n');
+    process.exit();
+  }
+  var fastas = new FASTAReader(fpath);
+  process.stdout.write(JSON.stringify(fastas));
+}
+
 
 function FASTAReader(fpath) {
   this.fpath = fpath;
@@ -170,6 +180,13 @@ function fparse(fpath) {
   var summary   = null;
   var length    = 0;
   var emptyline = 0;
+
+  function setAtEnd(_summary, _length, _emptyline) {
+    // result, and fpath is in outer scope.
+    _summary.length = _length - _emptyline;
+    result[_summary.id] = new FASTA(_summary, fpath);
+  }
+
   do {
     read = fs.readSync(fd, buffsize, pos);
 
@@ -183,8 +200,7 @@ function fparse(fpath) {
       else if (line.charAt(0) == '>') {
         // register a previous summary
         if (summary) {
-          summary.length = length - emptyline;
-          result[summary.id] = new FASTA(summary, fpath);
+          setAtEnd(summary, length, emptyline);
         }
         start += length;
         emptyline = 0;
@@ -204,13 +220,13 @@ function fparse(fpath) {
   while (read[1] > 0);
 
   // end
-  summary.length += remnant.length;
+  length += remnant.replace('\n', '').length;
+  setAtEnd(summary, length, emptyline);
   result[summary.id] = summary;
 
   fs.closeSync(fd);
   return result;
 }
-
 
 
 FASTAReader.parse = fparse;
@@ -223,3 +239,9 @@ FASTAReader.fgetIndex= fgetIndex;
 FASTAReader.fendPos = fendPos;
 
 module.exports = FASTAReader;
+
+if (__filename == process.argv[0]) {
+  main();
+}
+
+

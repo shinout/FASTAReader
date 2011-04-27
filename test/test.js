@@ -9,7 +9,7 @@ var fd = fs.openSync(fpath, 'r');
 
 
 /* detect id test */
-test('equal', Object.keys(result).length, 10, 'ids are not detected correctly.');
+test('equal', Object.keys(result).length, 11, 'ids are not detected correctly.');
 
 /* start position test */
 
@@ -53,6 +53,8 @@ test('equal', FASTAReader.fendPos(result.sample1), 400 , 'invalid end pos');
 test('equal', FASTAReader.fendPos(result.sample2), 250 , 'invalid end pos');
 test('equal', FASTAReader.fendPos(result.sample3), 19, 'invalid end pos');
 test('equal', FASTAReader.fendPos(result.sample4), 8 , 'invalid end pos');
+//console.log(FASTAReader.fendPos(result.sample_last));
+test('equal', FASTAReader.fendPos(result.sample_last), 250 , 'invalid end pos at sample_last');
 
 /* object test */
 
