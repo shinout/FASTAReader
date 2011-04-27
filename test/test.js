@@ -21,6 +21,12 @@ Object.keys(result).forEach(function(id){
 });
 test('result', 'start position test');
 
+/* instanceof fasta or not */
+var FASTA = FASTAReader.FASTA;
+Object.keys(result).forEach(function(id){
+  test('ok', result[id] instanceof FASTA, 'invalid object type: ' + id);
+});
+test('result', 'object type test');
 
 /* line length test */
 Object.keys(result).forEach(function(id){

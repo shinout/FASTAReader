@@ -226,7 +226,6 @@ function fparse(fpath) {
   // end
   length += remnant.replace('\n', '').length;
   setAtEnd(summary, length, emptyline);
-  result[summary.id] = summary;
 
   fs.closeSync(fd);
   return result;
@@ -241,6 +240,7 @@ FASTAReader.fstartIndex= fstartIndex;
 FASTAReader.fendIndex= fendIndex;
 FASTAReader.fgetIndex= fgetIndex;
 FASTAReader.fendPos = fendPos;
+FASTAReader.FASTA = FASTA;
 
 module.exports = FASTAReader;
 
