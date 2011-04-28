@@ -84,7 +84,7 @@ FASTA.prototype.getEndPos = function(){
 /* FASTA function implementation (be static) */
 
 function fgetIndex(unit, pos) {
-  return pos2index(pos, idlen(unit), unit.linelen) + unit.start;
+  return pos2index(pos, idlen(unit), unit.linelen) + Number(unit.start);
 }
 
 function idlen(unit) {
@@ -92,11 +92,11 @@ function idlen(unit) {
 }
 
 function fstartIndex(unit) {
-  return idlen(unit) + unit.start;
+  return idlen(unit) + Number(unit.start);
 }
 
 function fendIndex(unit) {
-  return unit.length + unit.start;
+  return unit.length + Number(unit.start);
 }
 
 function fendPos(unit) {
@@ -108,7 +108,8 @@ function fendPos(unit) {
 function ffetch(fpath, unit, start, length) {
   var fd        = fs.openSync(fpath, 'r');
   var startIdx  = fgetIndex(unit, start);
-  var endIdx    = Math.min(fgetIndex(unit, start + length), fendIndex(unit));
+  var endIdx    = Math.min(fgetIndex(unit, Number(start) + Number(length)), fendIndex(unit));
+
   if (endIdx - startIdx <= 0) {
     return '';
   }
@@ -135,7 +136,7 @@ function ffetch(fpath, unit, start, length) {
  * @return number : character index
  */
 function pos2index(pos, prelen, linelen) {
-  return prelen + pos -1 + Math.floor( (pos -1)/linelen );
+  return Number(prelen) + Number(pos) -1 + Math.floor( (pos -1)/linelen );
 }
 
 
@@ -150,7 +151,7 @@ function pos2index(pos, prelen, linelen) {
 function idx2pos(idx, prelen, linelen) {
   prelen = prelen || 0;
   linelen = linelen || 50;
-  return Math.max(0, idx +1 - prelen - Math.floor((idx +1 - prelen)/(linelen + 1)));
+  return Math.max(0, Number(idx) +1 - prelen - Math.floor((Number(idx) +1 - prelen)/(linelen + 1)));
 }
 
 
