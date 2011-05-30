@@ -20,29 +20,34 @@ function FASTAReader(fpath) {
 
 
 
+FASTAReader.prototype.getResult = function(id) {
+  var unit = this.result[id];
+  if (unit) return unit;
+  throw '['+ id +']: No such rname.';
+};
 
 FASTAReader.prototype.fetch = function(id, start, length) {
-  var unit = this.result[id];
+  var unit = this.getResult(id);
   return unit.fetch(start, length);
 }
 
 FASTAReader.prototype.getStartIndex = function(id) {
-  var unit = this.result[id];
+  var unit = this.getResult(id);
   return unit.getStartIndex();
 }
 
 FASTAReader.prototype.getEndIndex = function(id) {
-  var unit = this.result[id];
+  var unit = this.getResult(id);
   return unit.getEndIndex();
 }
 
 FASTAReader.prototype.getEndPos = function(id) {
-  var unit = this.result[id];
+  var unit = this.getResult(id);
   return unit.getEndPos();
 }
 
 FASTAReader.prototype.getIndex = function(id, pos) {
-  var unit = this.result[id];
+  var unit = this.getResult(id);
   return unit.getIndex(pos);
 }
 
