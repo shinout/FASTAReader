@@ -132,7 +132,6 @@ FASTAReader.prototype.hasN = function(id, start, length) {
       i++;
       continue;
     }
-    console.log(ns_start, startIdx, endIdx, ns_end);
 
     return !( ns_start < startIdx && endIdx < ns_end);
   }
