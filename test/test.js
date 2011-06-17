@@ -2,7 +2,7 @@ var FASTAReader= require('../FASTAReader');
 var test = require('./shinout.test');
 
 var fpath = __dirname + '/sample.fasta';
-var result = FASTAReader.parse(fpath);
+var result = FASTAReader.parse(fpath)[0];
 
 var fs  = require('fs');
 var fd = fs.openSync(fpath, 'r');

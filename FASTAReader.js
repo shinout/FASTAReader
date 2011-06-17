@@ -1,21 +1,77 @@
-var fs  = require('fs');
-var pth = require('path');
-
+const fs  = require('fs');
+const pth = require('path');
+const AP  = require('argparser');
 
 function main() {
-  var fpath = process.argv[2];
+  const p = new AP().addOptions([]).addValueOptions(['json', 'start', 'length', 'seq_id', 'exename']).parse();
+
+  function showUsage() {
+    const cmd = p.getOptions('exename') || (process.argv[0] + ' ' + require('path').basename(process.argv[1]));
+    console.error('[synopsis]');
+    console.error('\t' + cmd + ' <fasta file>');
+    console.error('\t' + cmd + ' flagment <fasta file>');
+    console.error('[options]');
+    console.error('\t--json <json file>\timport json summary file of the fasta file.');
+    console.error('[options (flagment mode)]');
+    console.error('\t--start number\tstart position of the fasta file to get.');
+    console.error('\t--length length\tlength of the fasta file to get.');
+    console.error('\t--seq_id sequence_id\tsequence id of the fasta file to get.');
+  }
+
+  var flagmentMode = (p.getArgs(0) == 'flagment');
+  var fpath = (flagmentMode) ? p.getArgs(1) : p.getArgs(0);
   if (! pth.existsSync(fpath)) {
-    process.stderr.write(fpath +': No such file.\n');
+    if (fpath) {
+      process.stderr.write(fpath +': No such file.\n');
+    }
+    showUsage();
     process.exit();
   }
-  var fastas = new FASTAReader(fpath);
-  process.stdout.write(JSON.stringify(fastas));
+
+  var json = p.getOptions('json');
+
+  if (json && ! pth.existsSync(json)) {
+    process.stderr.write(json +': No such file.\n');
+    showUsage();
+    process.exit();
+  }
+
+  if (json) {
+    json = JSON.parse(fs.readFileSync(json).toString());
+  }
+
+  var fastas = new FASTAReader(fpath, json);
+
+  if (flagmentMode) {
+    var start = p.getOptions("start");
+    var length = p.getOptions("length");
+    var seq_id = p.getOptions("seq_id") || Object.keys(fastas.result)[0];
+    console.log(fastas.fetch(seq_id, start, length));
+  }
+  else {
+    console.log(JSON.stringify({result:fastas.result, Ns:fastas.Ns}));
+  }
 }
 
 
-function FASTAReader(fpath) {
-  this.fpath = fpath;
-  this.result = fparse(fpath);
+function FASTAReader(fpath, json) {
+  this.fpath  = fpath;
+  if (json) {
+    this.result = (function() {
+      var ret = {};
+      Object.keys(json.result).forEach(function(k) {
+        ret[k] = new FASTA(json.result[k], fpath);
+      });
+      return ret;
+    })();
+
+    this.Ns     = json.Ns;
+  }
+  else {
+    var parsed  = fparse(fpath);
+    this.result = parsed[0];
+    this.Ns     = parsed[1];
+  }
 }
 
 
@@ -172,17 +228,20 @@ function idx2pos(idx, prelen, linelen) {
 
 function fparse(fpath) {
   if (pth.existsSync(!fpath)) {
-    process.stderr.write(config_file + ': No such file.\n');
-    return false;
+    console.error(config_file + ': No such file.');
+    return [false, false];
   }
 
   var fd        = fs.openSync(fpath, 'r');
   var read      = '';
   var pos       = 0;
   var start     = 0;
+  var Ns        = {};
+  var currentNs = null;
+  var currentN  = null;
   var remnant   = '';
   var result    = {};
-  var buffsize  = 1000;
+  var buffsize  = 65535;
   var summary   = null;
   var length    = 0;
   var emptyline = 0;
@@ -193,13 +252,33 @@ function fparse(fpath) {
     result[_summary.id] = new FASTA(_summary, fpath);
   }
 
+
   do {
     read = fs.readSync(fd, buffsize, pos);
 
     var lines = (remnant + read[0]).split('\n');
     remnant = lines.pop();
 
-    lines.forEach(function(line) {
+    lines.forEach(function(line, i) {
+
+      if (line.match('N')) {
+        if (!currentN) {
+          currentN = {
+            line: i,
+            start: start + length,
+            end : start + length+ line.length
+          };
+        }
+        else {
+          currentN.line++;
+          currentN.end += line.length;
+        }
+      }
+      else if (currentN) {
+        currentNs.push(currentN);
+        currentN = null;
+      }
+
       if (line == '') {
         emptyline++;
       }
@@ -213,10 +292,13 @@ function fparse(fpath) {
         length    = 0;
         // make a new summary
         summary = {id: line.slice(1), start: start, linelen: 0};
+        // make a new Ns
+        Ns[summary.id] = [];
+        currentNs = Ns[summary.id];
       }
       else {
         if (!summary) {
-          process.stderr.write(fpath +' does not seem to be FASTA format.\n');
+          console.error(fpath +' does not seem to be FASTA format.');
           process.exit();
         }
         if (!summary.linelen) {
@@ -234,7 +316,7 @@ function fparse(fpath) {
   setAtEnd(summary, length, emptyline);
 
   fs.closeSync(fd);
-  return result;
+  return [result, Ns];
 }
 
 
@@ -250,8 +332,6 @@ FASTAReader.FASTA = FASTA;
 
 module.exports = FASTAReader;
 
-if (__filename == process.argv[1]) {
-  main();
-}
 
+if (__filename == process.argv[1]) { main(); }
 
