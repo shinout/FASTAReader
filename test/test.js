@@ -36,15 +36,15 @@ Object.keys(result).forEach(function(id){
 test('result', 'line length test');
 
 /* get character test */
-test('equal', FASTAReader.fetch(fpath, result.sample1, 1, 4), 'acta', 'invalid fetch result');
-test('equal', FASTAReader.fetch(fpath, result.sample1, 51, 4), 'acta', 'invalid fetch result');
-test('equal', FASTAReader.fetch(fpath, result.sample1, 50, 4), 'aact', 'invalid fetch result');
-test('equal', FASTAReader.fetch(fpath, result.sample1, 49, 6), 'taacta', 'invalid fetch result');
-test('equal', FASTAReader.fetch(fpath, result.sample1, 1, 600).length, 400, 'invalid fetch result');
-test('equal', FASTAReader.fetch(fpath, result.sample4, 1, 8), 'aaaaaaaa', 'invalid fetch result');
-test('equal', FASTAReader.fetch(fpath, result.sample4, 1, 333), 'aaaaaaaa', 'invalid fetch result');
-test('equal', FASTAReader.fetch(fpath, result.sample4, 8, 1), 'a', 'invalid fetch result');
-test('equal', FASTAReader.fetch(fpath, result.sample4, 9, 1), '', 'invalid fetch result');
+test('equal', FASTAReader.fetch(fpath, result.sample1, 1, 4, fd), 'acta', 'invalid fetch result');
+test('equal', FASTAReader.fetch(fpath, result.sample1, 51, 4, fd), 'acta', 'invalid fetch result');
+test('equal', FASTAReader.fetch(fpath, result.sample1, 50, 4, fd), 'aact', 'invalid fetch result');
+test('equal', FASTAReader.fetch(fpath, result.sample1, 49, 6, fd), 'taacta', 'invalid fetch result');
+test('equal', FASTAReader.fetch(fpath, result.sample1, 1, 600, fd).length, 400, 'invalid fetch result');
+test('equal', FASTAReader.fetch(fpath, result.sample4, 1, 8, fd), 'aaaaaaaa', 'invalid fetch result');
+test('equal', FASTAReader.fetch(fpath, result.sample4, 1, 333, fd), 'aaaaaaaa', 'invalid fetch result');
+test('equal', FASTAReader.fetch(fpath, result.sample4, 8, 1, fd), 'a', 'invalid fetch result');
+test('equal', FASTAReader.fetch(fpath, result.sample4, 9, 1, fd), '', 'invalid fetch result');
 test('result', 'line length test');
 fs.closeSync(fd);
 
@@ -59,8 +59,6 @@ test('equal', FASTAReader.fendPos(result.sample1), 400 , 'invalid end pos');
 test('equal', FASTAReader.fendPos(result.sample2), 250 , 'invalid end pos');
 test('equal', FASTAReader.fendPos(result.sample3), 19, 'invalid end pos');
 test('equal', FASTAReader.fendPos(result.sample4), 8 , 'invalid end pos');
-//console.log(FASTAReader.fendPos(result.sample_last));
-test('equal', FASTAReader.fendPos(result.sample_last), 250 , 'invalid end pos at sample_last');
 
 /* object test */
 
@@ -72,4 +70,15 @@ test('equal', fastas.getEndIndex('sample1'), 12 + 51*8, 'invalid getEndIndex res
 test('equal', fastas.getEndPos('sample1'), 400, 'invalid getEndPos result');
 test('equal', fastas.getIndex('sample1', 53), 12 + 53 + 1 -1, 'invalid getIndex result');
 test('result', 'object test');
+
+/* hasN */
+console.log(fastas.Ns);
+test("equal", fastas.hasN("sample_last", 40, 1), false);
+test("equal", fastas.hasN("sample_last", 40, 9), false);
+test("equal", fastas.hasN("sample_last", 40, 10), false);
+
+test("equal", fastas.hasN("sample_last", 40, 11), true);
+test("equal", fastas.hasN("sample_last", 55, 1), true);
+test("equal", fastas.hasN("sample_last", 40, 15), true);
+test('result', 'hasN test');
 

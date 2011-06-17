@@ -56,6 +56,7 @@ function main() {
 
 function FASTAReader(fpath, json) {
   this.fpath  = fpath;
+  this.fd     = fs.openSync(fpath, 'r');
   if (json) {
     this.result = (function() {
       var ret = {};
@@ -82,9 +83,13 @@ FASTAReader.prototype.getResult = function(id) {
   throw '['+ id +']: No such rname.';
 };
 
+FASTAReader.prototype.close = function() {
+  fs.closeSync(this.fd);
+}
+
 FASTAReader.prototype.fetch = function(id, start, length) {
   var unit = this.getResult(id);
-  return unit.fetch(start, length);
+  return unit.fetch(start, length, this.fd);
 }
 
 FASTAReader.prototype.getStartIndex = function(id) {
@@ -105,6 +110,33 @@ FASTAReader.prototype.getEndPos = function(id) {
 FASTAReader.prototype.getIndex = function(id, pos) {
   var unit = this.getResult(id);
   return unit.getIndex(pos);
+}
+
+FASTAReader.prototype.hasN = function(id, start, length) {
+  var unit      = this.result[id];
+  var startIdx  = fgetIndex(unit, start);
+  var endIdx    = Math.min(fgetIndex(unit, Number(start) + Number(length)), fendIndex(unit));
+
+  var ns = this.Ns[id];
+  if (!ns) return false;
+  const len = ns.length;
+  if (len == 0) { return false;}
+  var end = start + length;
+
+  var i = 0;
+  while (i == 0 || ns[i-1]) {
+    var ns_end   = (i == len) ? unit.start + unit.length : ns[i].start;
+    var ns_start = (i >= 1) ? ns[i-1].end: unit.start;
+
+    if (ns_end <= startIdx) {
+      i++;
+      continue;
+    }
+    console.log(ns_start, startIdx, endIdx, ns_end);
+
+    return !( ns_start < startIdx && endIdx < ns_end);
+  }
+  return false;
 }
 
 
@@ -132,8 +164,8 @@ FASTA.prototype.getEndIndex = function() {
   return fendIndex(this);
 }
 
-FASTA.prototype.fetch = function(start, length) {
-  return ffetch(this.fpath, this, start, length);
+FASTA.prototype.fetch = function(start, length, fd) {
+  return ffetch(this.fpath, this, start, length, fd);
 }
 
 FASTA.prototype.getEndPos = function(){
@@ -166,8 +198,7 @@ function fendPos(unit) {
 
 
 
-function ffetch(fpath, unit, start, length) {
-  var fd        = fs.openSync(fpath, 'r');
+function ffetch(fpath, unit, start, length, fd) {
   var startIdx  = fgetIndex(unit, start);
   var endIdx    = Math.min(fgetIndex(unit, Number(start) + Number(length)), fendIndex(unit));
 
@@ -180,7 +211,6 @@ function ffetch(fpath, unit, start, length) {
   catch(e) {
     return '';
   }
-  fs.closeSync(fd);
   return read[0].split('\n').join('');
 }
 
