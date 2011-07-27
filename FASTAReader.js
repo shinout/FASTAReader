@@ -53,6 +53,9 @@ function main() {
     console.log(fastas.fetch(seq_id, start, length));
   }
   else {
+    Object.keys(fastas.result).forEach(function(chr) {
+      delete fastas.result[chr].fpath;
+    });
     console.log(JSON.stringify({result:fastas.result, Ns:fastas.Ns}));
   }
 }
