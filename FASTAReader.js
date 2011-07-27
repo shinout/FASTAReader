@@ -1,25 +1,29 @@
 const fs  = require('fs');
 const pth = require('path');
 const AP  = require('argparser');
+const cv  = require('./lib/compare_version');
 
 function main() {
+  if ( cv(process.version, '0.5.1') < 0) {
+    console.error('[Warning] You may require node>v0.5.1 to get fragment in a large file (>2^31).');
+  }
   const p = new AP().addOptions([]).addValueOptions(['json', 'start', 'length', 'seq_id', 'exename']).parse();
 
   function showUsage() {
     const cmd = p.getOptions('exename') || (process.argv[0] + ' ' + require('path').basename(process.argv[1]));
     console.error('[synopsis]');
     console.error('\t' + cmd + ' <fasta file>');
-    console.error('\t' + cmd + ' flagment <fasta file>');
+    console.error('\t' + cmd + ' fragment <fasta file>');
     console.error('[options]');
     console.error('\t--json <json file>\timport json summary file of the fasta file.');
-    console.error('[options (flagment mode)]');
+    console.error('[options (fragment mode)]');
     console.error('\t--start number\tstart position of the fasta file to get.');
     console.error('\t--length length\tlength of the fasta file to get.');
     console.error('\t--seq_id sequence_id\tsequence id of the fasta file to get.');
   }
 
-  var flagmentMode = (p.getArgs(0) == 'flagment');
-  var fpath = (flagmentMode) ? p.getArgs(1) : p.getArgs(0);
+  var fragmentMode = (p.getArgs(0) == 'fragment');
+  var fpath = (fragmentMode) ? p.getArgs(1) : p.getArgs(0);
   if (! pth.existsSync(fpath)) {
     if (fpath) {
       process.stderr.write(fpath +': No such file.\n');
@@ -42,7 +46,7 @@ function main() {
 
   var fastas = new FASTAReader(fpath, json);
 
-  if (flagmentMode) {
+  if (fragmentMode) {
     var start = p.getOptions("start");
     var length = p.getOptions("length");
     var seq_id = p.getOptions("seq_id") || Object.keys(fastas.result)[0];
