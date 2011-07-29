@@ -1,6 +1,6 @@
 const fs  = require('fs');
 const pth = require('path');
-const AP  = require('argparser');
+const AP  = require('../argparser/ArgParser');
 const cv  = require('./lib/compare_version');
 
 function main() {
