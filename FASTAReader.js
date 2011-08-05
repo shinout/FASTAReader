@@ -148,6 +148,7 @@ FASTAReader.prototype.hasN = function(id, start, length) {
 
 function FASTA(unit, fpath) {
   this.id      = unit.id;
+  this.desc    = unit.desc;
   this.start   = unit.start;
   this.length  = unit.length;
   this.linelen = unit.linelen;
@@ -187,6 +188,11 @@ function fgetIndex(unit, pos) {
 }
 
 function idlen(unit) {
+  var desclen = (unit.desc == null) ? 0 : 1 + unit.desc.length;
+  return unit.id.length + 2 + desclen;
+}
+
+function id_desc_len(unit) {
   return unit.id.length + 2;
 }
 
@@ -327,7 +333,10 @@ function fparse(fpath) {
         emptyline = 0;
         length    = 0;
         // make a new summary
-        summary = {id: line.slice(1), start: start, linelen: 0};
+        var id_desc = line.slice(1).split(' ');
+        var id = id_desc.shift();
+        var desc = (id_desc.length) ? id_desc.join(' ') : null;
+        summary = {id: id, desc: desc, start: start, linelen: 0};
         // make a new Ns
         Ns[summary.id] = [];
         currentNs = Ns[summary.id];
@@ -365,6 +374,7 @@ FASTAReader.fendIndex= fendIndex;
 FASTAReader.fgetIndex= fgetIndex;
 FASTAReader.fendPos = fendPos;
 FASTAReader.FASTA = FASTA;
+FASTAReader.idlen = idlen;
 
 module.exports = FASTAReader;
 

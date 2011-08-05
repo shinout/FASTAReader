@@ -30,7 +30,8 @@ test('result', 'object type test');
 
 /* line length test */
 Object.keys(result).forEach(function(id){
-  var read = fs.readSync(fd, 1 + result[id].linelen, result[id].start + id.length +2);
+  var read = fs.readSync(fd, 1 + result[id].linelen, result[id].start + result[id].idlen());
+  console.log(read[0]);
   test('ok', read[0].match(/^[^\n]*\n$/), 'invalid line length at ' + id);
 });
 test('result', 'line length test');
@@ -51,8 +52,10 @@ fs.closeSync(fd);
 /* get start index, end index, end pos*/
 var st = FASTAReader.fstartIndex(result.sample1);
 var en = FASTAReader.fendIndex(result.sample1); 
-test('equal', st, 12, 'invalid start index');
-test('equal', en, 12 + 51*8, 'invalid end index');
+
+var len = "   >sample1 description hoge fuga".length + 1;
+test('equal', st, len, 'invalid start index');
+test('equal', en, len + 51*8, 'invalid end index');
 test('equal', FASTAReader.fgetIndex(result.sample1, 1), st , 'invalid start index');
 test('equal', FASTAReader.fgetIndex(result.sample1, 1), st , 'invalid end index');
 test('equal', FASTAReader.fendPos(result.sample1), 400 , 'invalid end pos');
@@ -65,10 +68,10 @@ test('equal', FASTAReader.fendPos(result.sample4), 8 , 'invalid end pos');
 var fastas = new FASTAReader(fpath);
 test('equal', fastas.fetch('sample1', 49, 6), 'taacta', 'invalid fetch result');
 test('equal', fastas.fetch('sample4', 8, 1), 'a', 'invalid fetch result');
-test('equal', fastas.getStartIndex('sample1'), 12, 'invalid getStartIndex result');
-test('equal', fastas.getEndIndex('sample1'), 12 + 51*8, 'invalid getEndIndex result');
+test('equal', fastas.getStartIndex('sample1'), len, 'invalid getStartIndex result');
+test('equal', fastas.getEndIndex('sample1'), len + 51*8, 'invalid getEndIndex result');
 test('equal', fastas.getEndPos('sample1'), 400, 'invalid getEndPos result');
-test('equal', fastas.getIndex('sample1', 53), 12 + 53 + 1 -1, 'invalid getIndex result');
+test('equal', fastas.getIndex('sample1', 53), len + 53 + 1 -1, 'invalid getIndex result');
 test('result', 'object test');
 
 /* hasN */
