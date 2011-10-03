@@ -87,7 +87,7 @@ function FASTAReader(fpath, json) {
 FASTAReader.prototype.getResult = function(id) {
   var unit = this.result[id];
   if (unit) return unit;
-  throw '['+ id +']: No such rname.';
+  throw new Error('['+ id +']: No such rname.');
 };
 
 FASTAReader.prototype.close = function() {
@@ -205,7 +205,7 @@ function fendIndex(unit) {
 }
 
 function fendPos(unit) {
-  return idx2pos(unit.length-1, idlen(unit), unit.linelen);
+  return idx2pos(unit.length-2, idlen(unit), unit.linelen);
 }
 
 
@@ -218,7 +218,7 @@ function ffetch(fpath, unit, start, length, fd) {
     return '';
   }
   try {
-    var read      = fs.readSync(fd, endIdx - startIdx, startIdx);
+    var read = fs.readSync(fd, endIdx - startIdx, startIdx);
   }
   catch(e) {
     return '';
@@ -246,15 +246,16 @@ function pos2index(pos, prelen, linelen) {
 /**
  * FASTAReader.idx2pos
  * convert charcter index to DNA base position
- * @param number  idx     : character index
+ * @param number  idx     : character index (leftside)
  * @param number  prelen  : header data length
  * @param number  linelen : one line length
  * @return number : DNA base position
  */
 function idx2pos(idx, prelen, linelen) {
-  prelen = prelen || 0;
+  prelen  = prelen || 0;
   linelen = linelen || 50;
-  return Math.max(0, Number(idx) +1 - prelen - Math.floor((Number(idx) +1 - prelen)/(linelen + 1)));
+  idx = Number(idx);
+  return Math.max(0, idx - prelen - Math.floor((idx - prelen)/(linelen + 1))) + 1;
 }
 
 
