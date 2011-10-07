@@ -2,6 +2,7 @@ const fs  = require('fs');
 const pth = require('path');
 const AP  = require('argparser');
 const cv  = require('./lib/compare_version');
+const dna = require('./lib/dna');
 
 function main() {
   if ( cv(process.version, '0.5.1') < 0) {
@@ -94,9 +95,9 @@ FASTAReader.prototype.close = function() {
   fs.closeSync(this.fd);
 }
 
-FASTAReader.prototype.fetch = function(id, start, length) {
+FASTAReader.prototype.fetch = function(id, start, length, inverse) {
   var unit = this.getResult(id);
-  return unit.fetch(start, length, this.fd);
+  return unit.fetch(start, length, this.fd, inverse);
 }
 
 FASTAReader.prototype.getStartIndex = function(id) {
@@ -171,8 +172,8 @@ FASTA.prototype.getEndIndex = function() {
   return fendIndex(this);
 }
 
-FASTA.prototype.fetch = function(start, length, fd) {
-  return ffetch(this.fpath, this, start, length, fd);
+FASTA.prototype.fetch = function(start, length, fd, inverse) {
+  return ffetch(this.fpath, this, start, length, fd, inverse);
 }
 
 FASTA.prototype.getEndPos = function(){
@@ -210,7 +211,7 @@ function fendPos(unit) {
 
 
 
-function ffetch(fpath, unit, start, length, fd) {
+function ffetch(fpath, unit, start, length, fd, inverse) {
   var startIdx  = fgetIndex(unit, start);
   var endIdx    = Math.min(fgetIndex(unit, Number(start) + Number(length)), fendIndex(unit));
 
@@ -223,7 +224,8 @@ function ffetch(fpath, unit, start, length, fd) {
   catch(e) {
     return '';
   }
-  return read[0].split('\n').join('');
+  var ret = read[0].split('\n').join('');
+  return (inverse) ? dna.complStrand(ret, true) : ret;
 }
 
 

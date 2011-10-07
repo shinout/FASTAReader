@@ -46,8 +46,10 @@ Object.keys(result).forEach(function(id){
 /* get character test */
 T.equal(FR.fetch(fpath, result.sample1, 1, 4, fd), 'acta', 'fetch result');
 T.equal(FR.fetch(fpath, result.sample1, 51, 4, fd), 'acta', 'fetch result');
+T.equal(FR.fetch(fpath, result.sample1, 51, 4, fd, true), 'tagt', 'fetch result (inversed)');
 T.equal(FR.fetch(fpath, result.sample1, 50, 4, fd), 'aact', 'fetch result');
 T.equal(FR.fetch(fpath, result.sample1, 49, 6, fd), 'taacta', 'fetch result');
+T.equal(FR.fetch(fpath, result.sample1, 49, 6, fd, true), 'tagtta', 'fetch result (inversed)');
 T.equal(FR.fetch(fpath, result.sample1, 1, 600, fd).length, 400, 'fetch result');
 T.equal(FR.fetch(fpath, result.sample4, 1, 8, fd), 'aaaaaaaa', 'fetch result');
 T.equal(FR.fetch(fpath, result.sample4, 1, 333, fd), 'aaaaaaaa', 'fetch result');
