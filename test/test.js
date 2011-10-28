@@ -1,4 +1,4 @@
-var FR= require('../FASTAReader');
+var FR= require('../lib/FASTAReader');
 if (typeof global != 'undefined') require('./test.load').load(global);
 
 var fpath = __dirname + '/sample.fasta';
