@@ -2,13 +2,24 @@ FASTAReader
 ============
 read FASTA format (Node.js)
 
+using 1-based coordinate system 
+
+> [1-based coordinate system]
+
+> A coordinate system where the first base of a sequence is one.
+> In this coordinate system, a region is specified by a closed interval.
+> For example, the region between 3rd and 7th bases inclusive is [3, 7].
+> The SAM, GFF and Wiggle formats are using the 1-based coordinate system.
+
+> (from http://samtools.sourceforge.net/SAM1.pdf)
+
 ### Usage ###
     var FASTAReader = require('/path/to/FASTAReader.js');
-    var f = new FASTAReader('/path/to/fasta.fasta');
+    var freader = new FASTAReader('/path/to/fasta.fasta');
 
     // fetch flagments
-    var seq_id_of_the_fasta_file        = 'chr11';
-    var base_start_offset_I_want_to_get = 1240;
-    var length_of_the_flagment          = 420;
-    f.fetch(seq_id_of_the_fasta_file, seq_id_of_the_fasta_file, length_of_the_flagment);
+    var rname = 'chr11';
+    var start = 1240;
+    var length = 420;
+    var seq = freader.fetch(rname, start, length);
 
