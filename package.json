@@ -3,7 +3,7 @@
 , "version": "0.1.2"
 , "bin": "bin/fastareader"
 , "dependencies": 
-  { "dna": "0.1.x"
+  { "dna": ">=0.0.5"
   , "argparser" : ">=0.0.9"
   }
 
