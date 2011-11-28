@@ -1,6 +1,6 @@
 { "name": "fastareader"
 , "main": "lib/FASTAReader.js"
-, "version": "0.1.1"
+, "version": "0.1.2"
 , "bin": "bin/fastareader"
 , "dependencies": 
   { "dna": "0.1.x"
