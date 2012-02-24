@@ -3,14 +3,7 @@ FASTAReader
 
 description
 -----------
-reading FASTA format (Node.js)
-
-what can we do with FASTAReader?
--------------------------------
-+ fetching sequences of the exact position
-+ getting information of N regions
-+ getting information of reference lengths
-
+Reads FASTA format and fetches sequences. (Node.js)
 
 installation
 ------------
@@ -40,6 +33,10 @@ suffix equals .json.
 ## command-line ##
 
     $ fastareader <fasta file> <rname> <pos> <length> 
+
+Then, sequence data comes to stdout.
+    
+    AATGATCTATAGTCCATTAATTCAGTTACT
 
 ### args ###
 
@@ -78,20 +75,66 @@ suffix equals .json.
 
 <tr><th>--json, -j</th>
 <td>a FASTA Information JSON file. When the name is [fasta file].json, the file is automatically read.</td>
-<td>hg19.fa.json</td></tr>
+<td>--json hg19.fa.json</td></tr>
 </table>
 
 
 ## JavaScript API Documentation ##
 
-    var freader = require('fastareader').create('/path/to/fasta.fasta');
+- FASTAReader.create(fastafile, jsonfile)
+- reader.fetch(id, start, length, inverse)
+- reader.fetchByFormat(format)
+- reader.getEndPos(rname)
+- reader.hasN(rname, start, length)
 
-    // fetch a sequence
+### FASTAReader.create(fastafile, jsonfile) ###
+Creates an instance of FASTAReader.
+
+- **fastafile** is a fasta file to get sequence from.
+- **jsonfile** is optional, a FASTA Information JSON file.
+
+Returns an instance of FASTAReader.
+
+### reader.fetch(rname, start, length, inverse) ###
+
+- **rname** is the reference name.
+- **start** is the start position of the sequence to fetch.
+- **length** is the length of the sequence to fetch.
+- if **inverse** is true, complementary strand is fetched.
+
+Here is an example.
+
+    var reader = require('fastareader').create('/path/to/fasta.fasta');
+
     var rname  = 'chr11';
-    var start  = 1240;
+    var start  = 36181240;
     var length = 420;
     var rev    = true;
-    var seq = freader.fetch(rname, start, length, rev);
+
+    var seq = reader.fetch(rname, start, length, rev);
+
+### reader.fetchByFormat(format) ###
+
+**format** is compatible with [dna library](https://github.com/shinout/dna)
+
+an example of the format
+
+    chr2:34100214-34101989,-
+
+Note that this format is **0-based coordinate.**
+
+### reader.getEndPos(rname) ###
+
+Gets the last position of **rname**.
+
+It is the same as the length of the reference.
+
+### reader.hasN(rname, start, length) ###
+
+Returns true if the region contains N, otherwise returns false.
+The region is specified by **rname**, **start** and **length**.
+These are the same meaning as **reader.fetch()**.
+
 
 NOTICE
 ------
@@ -106,3 +149,4 @@ FASTAReader uses 1-based coordinate system.
 > The SAM, GFF and Wiggle formats are using the 1-based coordinate system.
 
 > (from http://samtools.sourceforge.net/SAM1.pdf)
+
