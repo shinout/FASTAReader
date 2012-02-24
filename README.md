@@ -20,11 +20,9 @@ If you haven't installed [Node.js](http://nodejs.org/) yet,
 
 first install [nvm](https://github.com/creationix/nvm) and follow the instruction on that page.
 
+## preparation ##
+### Create FASTA Information JSON file ###
 
-
-Usage
-------
-### FASTA Information JSON file ###
 FASTAReader first scans through the given FASTA file.
 
 It costs nearly one minites.
@@ -39,20 +37,61 @@ After generating JSON, the file is automatically read if the prefix equals to th
 suffix equals .json. 
 
 
-### javascript ###
-
-    var FASTAReader = require('/path/to/FASTAReader.js');
-    var freader = new FASTAReader('/path/to/fasta.fasta');
-
-    // fetch flagments
-    var rname = 'chr11';
-    var start = 1240;
-    var length = 420;
-    var seq = freader.fetch(rname, start, length);
-
-### command-line ###
+## command-line ##
 
     $ fastareader <fasta file> <rname> <pos> <length> 
+
+### args ###
+
+<table>
+<tr><th>name</th>
+<td>description</td>
+<td>example</td></tr>
+
+<tr><th>fasta file</th>
+<td>a fasta file to get sequences</td>
+<td>hg19.fa</td></tr>
+
+<tr><th>rname</th>
+<td>a reference name to fetch. Must be in the fasta file.</td>
+<td>chr12</td></tr>
+
+<tr><th>pos</th>
+<td>start position of the sequence to fetch (1-based coordinate).</td>
+<td>51417222</td></tr>
+
+<tr><th>length</th>
+<td>length of the sequence to fetch.</td>
+<td>300</td></tr>
+</table>
+
+### options ###
+
+<table>
+<tr><th>name</th>
+<td>description</td>
+<td>example</td></tr>
+
+<tr><th>--compl, -c</th>
+<td>Gets complmentary strand of the sequence</td>
+<td>-c</td></tr>
+
+<tr><th>--json, -j</th>
+<td>a FASTA Information JSON file. When the name is [fasta file].json, the file is automatically read.</td>
+<td>hg19.fa.json</td></tr>
+</table>
+
+
+## JavaScript API Documentation ##
+
+    var freader = require('fastareader').create('/path/to/fasta.fasta');
+
+    // fetch a sequence
+    var rname  = 'chr11';
+    var start  = 1240;
+    var length = 420;
+    var rev    = true;
+    var seq = freader.fetch(rname, start, length, rev);
 
 NOTICE
 ------

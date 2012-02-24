@@ -1,22 +1,22 @@
 { "name": "fastareader"
 , "main": "lib/FASTAReader.js"
-, "version": "0.1.6"
+, "version": "0.1.7"
 , "bin": "bin/fastareader"
 , "dependencies": 
   { "dna": ">=0.1.5"
-  , "argparser" : ">=0.1.1"
+  , "argparser" : ">=0.2.0"
   }
 
 , "devDependencies":
   { "termcolor": "*"
   }
 
-, "engines": { "node" : ">=0.5.1" }  
+, "engines": { "node" : ">=0.6.1" }  
 
 , "author": "SHIN Suzuki <shinout310@gmail.com>"
 , "description": "FASTA DNA/RNA sequence reader"
 
-, "tags": ["DNA", "FASTA", "RNA", "sequence", "bioinformatics"]
+, "keywords": ["DNA", "FASTA", "RNA", "sequence", "bioinformatics"]
 
 , "repository": 
   { "type": "git"
